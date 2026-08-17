@@ -209,7 +209,8 @@ https://xxxx-your-account.snowflakecomputing.app
 ```
 ANDE_Native_App/
 ├── README.md
-├── DEMO_SCRIPT_30MIN.md           # 30-minute demo walkthrough
+├── DEMO_SCRIPT_30MIN.md           # 30-minute technical demo walkthrough
+├── DEMO_SCRIPT_20MIN_BUSINESS.md  # 20-minute business value demo
 ├── install/                        # SQL scripts (run in order)
 │   ├── 01_infrastructure.sql       # Database, warehouses, compute pool, stage
 │   ├── 02_tables.sql              # All table DDL
