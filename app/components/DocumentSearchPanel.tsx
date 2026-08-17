@@ -42,7 +42,7 @@ interface DocumentSearchPanelProps {
 export function DocumentSearchPanel({ customerId, customerName, customerEmail }: DocumentSearchPanelProps) {
   const [claimIdInput, setClaimIdInput] = useState("")
   const [nameInput, setNameInput] = useState(customerName || "")
-  const [emailInput, setEmailInput] = useState(customerEmail || (customerId ? "" : "colm.moynihan@snowflake.com"))
+  const [emailInput, setEmailInput] = useState(customerEmail || (customerId ? "" : "john.smith@snowflake.com"))
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo] = useState("")
   const [claims, setClaims] = useState<Claim[]>([])
@@ -96,7 +96,7 @@ export function DocumentSearchPanel({ customerId, customerName, customerEmail }:
       setEmailInput("")
       doSearch({ name: customerName })
     } else {
-      doSearch({ email: "colm.moynihan@snowflake.com" })
+      doSearch({ email: "john.smith@snowflake.com" })
     }
   }, [customerId])
 
@@ -123,7 +123,7 @@ export function DocumentSearchPanel({ customerId, customerName, customerEmail }:
             <label>Customer Name</label>
             <input
               type="text"
-              placeholder="e.g. Colm Moynihan"
+              placeholder="e.g. John Smith"
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && doSearch()}
@@ -135,7 +135,7 @@ export function DocumentSearchPanel({ customerId, customerName, customerEmail }:
             <label>Customer Email</label>
             <input
               type="text"
-              placeholder="e.g. colm.moynihan@snowflake.com"
+              placeholder="e.g. john.smith@snowflake.com"
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && doSearch()}

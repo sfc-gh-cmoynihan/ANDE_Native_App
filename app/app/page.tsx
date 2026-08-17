@@ -71,7 +71,7 @@ export default function Home() {
       }}>
         <img src="/ande-logo.png" alt="AND-e" height={28} style={{ marginRight: 12 }} />
         <div style={{ display: "flex", flexDirection: "column", marginRight: 28, lineHeight: 1.3 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-primary)" }}>Colm Moynihan</span>
+          <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-primary)" }}>John Smith</span>
           <span style={{ fontSize: 10, color: "#94a3b8", fontFamily: "monospace" }}>{currentTime}</span>
         </div>
         <nav style={{ display: "flex", alignItems: "center", gap: 4, flex: 1 }}>

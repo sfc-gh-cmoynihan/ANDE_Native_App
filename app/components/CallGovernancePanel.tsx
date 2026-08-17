@@ -74,7 +74,7 @@ export function CallGovernancePanel() {
     await fetch("/api/calls/governance", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ flagId, action, reviewNotes, reviewedBy: "Colm Moynihan" })
+      body: JSON.stringify({ flagId, action, reviewNotes, reviewedBy: "John Smith" })
     })
     setReviewingFlag(null)
     setReviewNotes("")

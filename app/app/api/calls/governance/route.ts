@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     await querySnowflake(`
       UPDATE ANDE_DB.PUBLIC.CALL_GOVERNANCE_FLAGS
       SET STATUS = '${status}',
-          REVIEWED_BY = '${reviewedBy || "Colm Moynihan"}',
+          REVIEWED_BY = '${reviewedBy || "John Smith"}',
           REVIEWED_AT = CURRENT_TIMESTAMP(),
           REVIEW_NOTES = '${(reviewNotes || "").replace(/'/g, "''")}'
       WHERE FLAG_ID = ${flagId}

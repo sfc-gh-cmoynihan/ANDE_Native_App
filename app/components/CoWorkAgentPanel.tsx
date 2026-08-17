@@ -21,7 +21,7 @@ const MODELS = [
 ]
 
 const SAMPLE_QUESTIONS = [
-  "What Toyota vehicles does Colm Moynihan have insured?",
+  "What Toyota vehicles does John Smith have insured?",
   "What is the excess on the Lexus RX policy?",
   "Show me all motor insurance policies",
   "What is Dan Jones covered for on his Lexus IS?",

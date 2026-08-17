@@ -163,7 +163,7 @@ export function CallsPanel({ customerId }: CallsPanelProps) {
           </div>
           <div style={{ flex: 1 }}>
             <label style={{ fontSize: 11, fontWeight: 600, color: "#475569", display: "block", marginBottom: 4 }}>Customer Name</label>
-            <input type="text" placeholder="e.g. Colm Moynihan" value={nameInput} onChange={(e) => setNameInput(e.target.value)} onKeyDown={handleKeyDown}
+            <input type="text" placeholder="e.g. John Smith" value={nameInput} onChange={(e) => setNameInput(e.target.value)} onKeyDown={handleKeyDown}
               style={{ width: "100%", padding: "8px 12px", border: "1px solid #e2e8f0", borderRadius: 6, fontSize: 13 }} />
           </div>
           <button onClick={doSearch} style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", background: "var(--accent)", color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>

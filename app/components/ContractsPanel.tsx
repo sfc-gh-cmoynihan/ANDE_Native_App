@@ -34,7 +34,7 @@ export function ContractsPanel({ customerId, customerName, customerEmail }: Cont
   const [policyIdInput, setPolicyIdInput] = useState("")
   const [nameInput, setNameInput] = useState(customerName || "")
   const [idInput, setIdInput] = useState(customerId || "")
-  const [emailInput, setEmailInput] = useState(customerEmail || customerId ? "" : "colm.moynihan@snowflake.com")
+  const [emailInput, setEmailInput] = useState(customerEmail || customerId ? "" : "john.smith@snowflake.com")
   const [contracts, setContracts] = useState<Contract[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -66,8 +66,8 @@ export function ContractsPanel({ customerId, customerName, customerEmail }: Cont
       setEmailInput(customerEmail || "")
       doSearch({ id: customerId })
     } else {
-      setEmailInput("colm.moynihan@snowflake.com")
-      doSearch({ email: "colm.moynihan@snowflake.com" })
+      setEmailInput("john.smith@snowflake.com")
+      doSearch({ email: "john.smith@snowflake.com" })
     }
   }, [customerId])
 
@@ -98,12 +98,12 @@ export function ContractsPanel({ customerId, customerName, customerEmail }: Cont
           </div>
           <div className="input-group">
             <label>Customer Name</label>
-            <input type="text" placeholder="e.g. Colm Moynihan" value={nameInput} onChange={(e) => setNameInput(e.target.value)} onKeyDown={handleKeyDown} />
+            <input type="text" placeholder="e.g. John Smith" value={nameInput} onChange={(e) => setNameInput(e.target.value)} onKeyDown={handleKeyDown} />
           </div>
 
           <div className="input-group">
             <label>Customer Email</label>
-            <input type="text" placeholder="e.g. colm.moynihan@snowflake.com" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} onKeyDown={handleKeyDown} />
+            <input type="text" placeholder="e.g. john.smith@snowflake.com" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} onKeyDown={handleKeyDown} />
           </div>
         </div>
         <button className="btn btn-primary" onClick={() => doSearch()}>

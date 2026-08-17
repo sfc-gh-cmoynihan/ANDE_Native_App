@@ -24,11 +24,11 @@ This demo showcases a Customer 360 platform for Toyota Insurance Services, built
 ### Customer Search
 
 4. Navigate to **Customer**
-5. Enter email: `colm.moynihan@snowflake.com`
+5. Enter email: `john.smith@snowflake.com`
 6. Click Search
 7. Show the customer summary:
    - **3 Total Policies** with total premium of EUR 2,810
-   - **2 Dependents** (Fionn & Ava Moynihan)
+   - **2 Dependents** (Fionn & Ava Smith)
    - **Churn Score** with risk breakdown
    - Policy details (Toyota Corolla, RAV4, Yaris)
    - Children/dependents panel with driver status
@@ -150,7 +150,7 @@ This demo showcases a Customer 360 platform for Toyota Insurance Services, built
 - Returns formatted monetary value
 
 **Question 4 — Claims:**
-> "Show me all pending claims for Colm Moynihan"
+> "Show me all pending claims for John Smith"
 
 - Searches customer data
 - Returns claim details with amounts and status

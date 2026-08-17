@@ -32,7 +32,7 @@
 
 ## Tab 2: Customer Search (2 minutes)
 
-**Navigate to Customer. Search: `colm.moynihan@snowflake.com`**
+**Navigate to Customer. Search: `john.smith@snowflake.com`**
 
 **What to show:**
 - Unified golden record: 3 policies, EUR 2,810 total premium

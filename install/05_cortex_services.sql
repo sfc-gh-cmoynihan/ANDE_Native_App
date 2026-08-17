@@ -265,7 +265,7 @@ CREATE OR REPLACE AGENT ANDE_DB.PUBLIC.ANDE_AGENT
     RESPONSE => 'Format your responses clearly. When showing data, use tables where appropriate. When referencing documents or policies, include the policy/contract ID and key details. Be concise but thorough.'
   )
   SAMPLE_QUESTIONS = (
-    'What claims are currently pending for Colm Moynihan?',
+    'What claims are currently pending for John Smith?',
     'Show me all motor claims over EUR 10,000',
     'What is the total value of approved claims in Ireland?',
     'What is the excess on the Lexus RX policy?',

@@ -74,7 +74,7 @@ export function VersionsPanel({ customerId, embedded }: VersionsPanelProps) {
             </div>
             <div className="input-group">
               <label>Or search by name</label>
-              <input type="text" placeholder="e.g. Colm Moynihan" value={nameInput} onChange={(e) => setNameInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doSearch()} />
+              <input type="text" placeholder="e.g. John Smith" value={nameInput} onChange={(e) => setNameInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doSearch()} />
             </div>
           </div>
           <button className="btn btn-primary" onClick={doSearch}>
