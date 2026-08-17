@@ -1,140 +1,126 @@
 -- AND-E Insurance App: Data Loading
--- All data has been exported to: @ANDE_DB.PUBLIC.ANDE_EXPORT_STAGE/
+-- =============================================================================
+-- This script loads SAMPLE DATA from CSV files included in the repository.
+-- These CSVs are in: data/sample/
 --
--- TO LOAD ON A NEW ACCOUNT:
---   1. Create the stage: CREATE STAGE ANDE_DB.PUBLIC.ANDE_EXPORT_STAGE;
---   2. Copy the Parquet/CSV files from the source stage to the new stage
---      (use GET to download, then PUT to upload — or use data sharing)
---   3. Run the COPY INTO statements below
-
--- ============================================================
--- NOTE: Large tables (6.5M+ rows) cannot be inlined as INSERT statements.
--- Use the export/import process described above for:
+-- SAMPLE DATA INCLUDED (no customer PII):
+--   - customer_calls.csv (200 rows) — synthetic call center data
+--   - customer_contracts.csv (14 rows) — demo insurance policies
+--   - customer_claims.csv (52 rows) — demo claims
+--   - customer_dependents.csv (4 rows) — demo family members
+--   - web_activity.csv (23 rows) — synthetic web sessions
+--   - call_governance_words.csv (1065 rows) — compliance word list
+--   - call_governance_flags.csv (178 rows) — flagged call instances
+--
+-- LARGE TABLES NOT INCLUDED (require separate data transfer):
 --   - CUSTOMER_MASTER_GOLDEN_TABLE (6.5M rows)
 --   - CUSTOMER_MASTER (6.5M rows)
 --   - SALESFORCE_CONTACT (7.2M rows)
 --   - MATCH_CLUSTERS (24K rows)
 --   - UK_CLAIMS_GEO (50K rows)
+--   - TOYOTA_APPROVED_MECHANICS (25 rows)
 --
--- The following INSERT statements cover the smaller operational tables.
--- ============================================================
+-- LOADING STEPS:
+--   1. Run this script to create the stage
+--   2. Upload CSV files: PUT file:///path/to/data/sample/*.csv @ANDE_EXPORT_STAGE/sample_data/
+--   3. Run the COPY INTO statements below
+-- =============================================================================
 
 USE ROLE ACCOUNTADMIN;
 USE DATABASE ANDE_DB;
 USE SCHEMA PUBLIC;
 USE WAREHOUSE ADHOC_WH;
 
--- ============================================================
--- CUSTOMER_CONTRACTS (14 rows)
--- ============================================================
--- Export from source: SELECT * FROM ANDE_DB.PUBLIC.CUSTOMER_CONTRACTS;
--- These contain the insurance policies with full contract text.
--- Use the data export utility or manually insert from the source system.
+-- =============================================================================
+-- STEP 1: Upload sample data CSVs to stage
+-- Run these from SnowSQL or Snow CLI after cloning the repo:
+-- =============================================================================
+-- PUT file:///path/to/ANDE_Native_App/data/sample/customer_calls.csv @ANDE_EXPORT_STAGE/sample_data/ AUTO_COMPRESS=FALSE;
+-- PUT file:///path/to/ANDE_Native_App/data/sample/customer_contracts.csv @ANDE_EXPORT_STAGE/sample_data/ AUTO_COMPRESS=FALSE;
+-- PUT file:///path/to/ANDE_Native_App/data/sample/customer_claims.csv @ANDE_EXPORT_STAGE/sample_data/ AUTO_COMPRESS=FALSE;
+-- PUT file:///path/to/ANDE_Native_App/data/sample/customer_dependents.csv @ANDE_EXPORT_STAGE/sample_data/ AUTO_COMPRESS=FALSE;
+-- PUT file:///path/to/ANDE_Native_App/data/sample/web_activity.csv @ANDE_EXPORT_STAGE/sample_data/ AUTO_COMPRESS=FALSE;
+-- PUT file:///path/to/ANDE_Native_App/data/sample/call_governance_words.csv @ANDE_EXPORT_STAGE/sample_data/ AUTO_COMPRESS=FALSE;
+-- PUT file:///path/to/ANDE_Native_App/data/sample/call_governance_flags.csv @ANDE_EXPORT_STAGE/sample_data/ AUTO_COMPRESS=FALSE;
 
--- ============================================================
--- CUSTOMER_CALLS (200 rows)
--- ============================================================
--- Export from source: SELECT * FROM ANDE_DB.PUBLIC.CUSTOMER_CALLS;
--- Contains call transcriptions, AI-generated summaries, sentiment analysis.
--- Contains FCA compliance statements in ~50% of calls.
+-- =============================================================================
+-- STEP 2: Load sample data from CSVs
+-- =============================================================================
 
--- ============================================================
--- CUSTOMER_DEPENDENTS (4 rows)
--- ============================================================
--- Export from source: SELECT * FROM ANDE_DB.PUBLIC.CUSTOMER_DEPENDENTS;
--- Loaded via Parquet COPY below.
+-- CSV file format for all sample data files
+CREATE OR REPLACE FILE FORMAT ANDE_DB.PUBLIC.SAMPLE_CSV_FORMAT
+  TYPE = 'CSV'
+  FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+  SKIP_HEADER = 1
+  NULL_IF = ('');
 
--- ============================================================
--- CUSTOMER_CLAIMS (52 rows)
--- ============================================================
--- Export from source: SELECT * FROM ANDE_DB.PUBLIC.CUSTOMER_CLAIMS;
--- Contains insurance claims with amounts, statuses, and country data.
+-- Operational tables (sample data included in repo)
+COPY INTO CUSTOMER_CALLS
+  FROM @ANDE_EXPORT_STAGE/sample_data/customer_calls.csv
+  FILE_FORMAT = SAMPLE_CSV_FORMAT
+  ON_ERROR = 'CONTINUE';
 
--- ============================================================
--- WEB_ACTIVITY (23 rows)
--- ============================================================
--- Export from source: SELECT * FROM ANDE_DB.PUBLIC.WEB_ACTIVITY;
--- Contains web session data: pages viewed, forms submitted, campaign tracking.
+COPY INTO CUSTOMER_CONTRACTS
+  FROM @ANDE_EXPORT_STAGE/sample_data/customer_contracts.csv
+  FILE_FORMAT = SAMPLE_CSV_FORMAT
+  ON_ERROR = 'CONTINUE';
 
--- ============================================================
--- CALL_GOVERNANCE_WORDS (1065 rows)
--- ============================================================
--- Export from source: SELECT * FROM ANDE_DB.PUBLIC.CALL_GOVERNANCE_WORDS;
--- Contains flagged words/phrases for call monitoring (profanity, threats, PII).
+COPY INTO CUSTOMER_CLAIMS
+  FROM @ANDE_EXPORT_STAGE/sample_data/customer_claims.csv
+  FILE_FORMAT = SAMPLE_CSV_FORMAT
+  ON_ERROR = 'CONTINUE';
 
--- ============================================================
--- CALL_GOVERNANCE_FLAGS (178 rows)
--- ============================================================
--- Export from source: SELECT * FROM ANDE_DB.PUBLIC.CALL_GOVERNANCE_FLAGS;
--- Contains flagged call instances from governance word matching.
+COPY INTO CUSTOMER_DEPENDENTS
+  FROM @ANDE_EXPORT_STAGE/sample_data/customer_dependents.csv
+  FILE_FORMAT = SAMPLE_CSV_FORMAT
+  ON_ERROR = 'CONTINUE';
 
--- ============================================================
--- TOYOTA_APPROVED_MECHANICS (25 rows)
--- ============================================================
--- Export from source: SELECT * FROM CUSTOMER_360.PUBLIC.TOYOTA_APPROVED_MECHANICS;
--- Contains approved Toyota mechanic locations across the UK with GEOGRAPHY points.
+COPY INTO WEB_ACTIVITY
+  FROM @ANDE_EXPORT_STAGE/sample_data/web_activity.csv
+  FILE_FORMAT = SAMPLE_CSV_FORMAT
+  ON_ERROR = 'CONTINUE';
 
--- ============================================================
--- DATA IMPORT COMMANDS (run on TARGET account after uploading files to stage)
--- ============================================================
+COPY INTO CALL_GOVERNANCE_WORDS
+  FROM @ANDE_EXPORT_STAGE/sample_data/call_governance_words.csv
+  FILE_FORMAT = SAMPLE_CSV_FORMAT
+  ON_ERROR = 'CONTINUE';
 
--- Small operational tables (Parquet)
-COPY INTO CUSTOMER_CALLS FROM @ANDE_EXPORT_STAGE/customer_calls/
-  FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
+COPY INTO CALL_GOVERNANCE_FLAGS
+  FROM @ANDE_EXPORT_STAGE/sample_data/call_governance_flags.csv
+  FILE_FORMAT = SAMPLE_CSV_FORMAT
+  ON_ERROR = 'CONTINUE';
 
-COPY INTO CUSTOMER_CONTRACTS FROM @ANDE_EXPORT_STAGE/customer_contracts/
-  FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
+-- =============================================================================
+-- STEP 3 (OPTIONAL): Load large tables from Parquet exports
+-- These require data transfer from the source account (SFSEEUROPE-IE_DEMO10)
+-- Source stage: @ANDE_DB.PUBLIC.ANDE_EXPORT_STAGE/
+-- =============================================================================
 
-COPY INTO CUSTOMER_CLAIMS FROM @ANDE_EXPORT_STAGE/customer_claims/
-  FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
+-- COPY INTO CUSTOMER_MASTER_GOLDEN_TABLE FROM @ANDE_EXPORT_STAGE/customer_master_golden_table/
+--   FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
 
-COPY INTO CUSTOMER_DEPENDENTS FROM @ANDE_EXPORT_STAGE/customer_dependents/
-  FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
+-- COPY INTO CUSTOMER_MASTER FROM @ANDE_EXPORT_STAGE/customer_master/
+--   FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
 
-COPY INTO WEB_ACTIVITY FROM @ANDE_EXPORT_STAGE/web_activity/
-  FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
+-- COPY INTO SALESFORCE_CONTACT FROM @ANDE_EXPORT_STAGE/salesforce_contact/
+--   FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '"' COMPRESSION = 'GZIP' SKIP_HEADER = 1);
 
-COPY INTO CALL_GOVERNANCE_WORDS FROM @ANDE_EXPORT_STAGE/call_governance_words/
-  FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
+-- COPY INTO MATCH_CLUSTERS FROM @ANDE_EXPORT_STAGE/match_clusters/
+--   FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
 
-COPY INTO CALL_GOVERNANCE_FLAGS FROM @ANDE_EXPORT_STAGE/call_governance_flags/
-  FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
+-- GeoSpatial tables (GEOGRAPHY columns exported as GeoJSON strings)
+-- COPY INTO UK_CLAIMS_GEO (CLAIM_ID, CUSTOMER_NAME, CLAIM_DATE, CLAIM_AMOUNT, CLAIM_TYPE, VEHICLE_MAKE, VEHICLE_MODEL, ADDRESS, CITY, POSTCODE, LOCATION, STATUS)
+--   FROM (SELECT $1:CLAIM_ID::VARCHAR, $1:CUSTOMER_NAME::VARCHAR, $1:CLAIM_DATE::DATE,
+--                $1:CLAIM_AMOUNT::NUMBER(10,2), $1:CLAIM_TYPE::VARCHAR, $1:VEHICLE_MAKE::VARCHAR,
+--                $1:VEHICLE_MODEL::VARCHAR, $1:ADDRESS::VARCHAR, $1:CITY::VARCHAR, $1:POSTCODE::VARCHAR,
+--                TRY_TO_GEOGRAPHY($1:LOCATION_GEOJSON::VARCHAR), $1:STATUS::VARCHAR
+--         FROM @ANDE_EXPORT_STAGE/uk_claims_geo/)
+--   FILE_FORMAT = (TYPE = 'PARQUET');
 
-COPY INTO MATCH_CLUSTERS FROM @ANDE_EXPORT_STAGE/match_clusters/
-  FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
-
--- GeoSpatial tables (exported with LOCATION as GeoJSON string — convert back)
-COPY INTO UK_CLAIMS_GEO (CLAIM_ID, CUSTOMER_NAME, CLAIM_DATE, CLAIM_AMOUNT, CLAIM_TYPE, VEHICLE_MAKE, VEHICLE_MODEL, ADDRESS, CITY, POSTCODE, LOCATION, STATUS)
-  FROM (SELECT $1:CLAIM_ID::VARCHAR, $1:CUSTOMER_NAME::VARCHAR, $1:CLAIM_DATE::DATE,
-               $1:CLAIM_AMOUNT::NUMBER(10,2), $1:CLAIM_TYPE::VARCHAR, $1:VEHICLE_MAKE::VARCHAR,
-               $1:VEHICLE_MODEL::VARCHAR, $1:ADDRESS::VARCHAR, $1:CITY::VARCHAR, $1:POSTCODE::VARCHAR,
-               TRY_TO_GEOGRAPHY($1:LOCATION_GEOJSON::VARCHAR), $1:STATUS::VARCHAR
-        FROM @ANDE_EXPORT_STAGE/uk_claims_geo/)
-  FILE_FORMAT = (TYPE = 'PARQUET');
-
-COPY INTO TOYOTA_APPROVED_MECHANICS (MECHANIC_ID, GARAGE_NAME, ADDRESS, CITY, POSTCODE, LOCATION, PHONE, RATING, SPECIALIZATION)
-  FROM (SELECT $1:MECHANIC_ID::VARCHAR, $1:GARAGE_NAME::VARCHAR, $1:ADDRESS::VARCHAR,
-               $1:CITY::VARCHAR, $1:POSTCODE::VARCHAR,
-               TRY_TO_GEOGRAPHY($1:LOCATION_GEOJSON::VARCHAR),
-               $1:PHONE::VARCHAR, $1:RATING::NUMBER(2,1), $1:SPECIALIZATION::VARCHAR
-        FROM @ANDE_EXPORT_STAGE/toyota_approved_mechanics/)
-  FILE_FORMAT = (TYPE = 'PARQUET');
-
--- Large tables (Parquet)
-COPY INTO CUSTOMER_MASTER_GOLDEN_TABLE FROM @ANDE_EXPORT_STAGE/customer_master_golden_table/
-  FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
-
-COPY INTO CUSTOMER_MASTER FROM @ANDE_EXPORT_STAGE/customer_master/
-  FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
-
--- SALESFORCE_CONTACT (CSV with GZIP compression)
--- NOTE: Column order in CSV must match table definition exactly since
--- MATCH_BY_COLUMN_NAME is not supported for CSV format.
-COPY INTO SALESFORCE_CONTACT FROM @ANDE_EXPORT_STAGE/salesforce_contact/
-  FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '"' COMPRESSION = 'GZIP' SKIP_HEADER = 1);
-
--- ============================================================
--- SOURCE STAGE LOCATION (on SFSEEUROPE-IE_DEMO10 account):
--- @ANDE_DB.PUBLIC.ANDE_EXPORT_STAGE/
--- All files are already exported and ready to transfer.
--- ============================================================
+-- COPY INTO TOYOTA_APPROVED_MECHANICS (MECHANIC_ID, GARAGE_NAME, ADDRESS, CITY, POSTCODE, LOCATION, PHONE, RATING, SPECIALIZATION)
+--   FROM (SELECT $1:MECHANIC_ID::VARCHAR, $1:GARAGE_NAME::VARCHAR, $1:ADDRESS::VARCHAR,
+--                $1:CITY::VARCHAR, $1:POSTCODE::VARCHAR,
+--                TRY_TO_GEOGRAPHY($1:LOCATION_GEOJSON::VARCHAR),
+--                $1:PHONE::VARCHAR, $1:RATING::NUMBER(2,1), $1:SPECIALIZATION::VARCHAR
+--         FROM @ANDE_EXPORT_STAGE/toyota_approved_mechanics/)
+--   FILE_FORMAT = (TYPE = 'PARQUET');
